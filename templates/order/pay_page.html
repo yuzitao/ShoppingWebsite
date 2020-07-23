@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        #app {
+            width: 80%;
+            min-width: 800px;
+            height: 600px;
+            margin: 10px auto;
+            border: 1px solid #dddddd;
+        }
+
+        .alipay, .chatpay {
+            width: 100px;
+            height: 35px;
+            background-color: white;
+            border: 1px solid black;
+            margin: 20px 0 0 20px;
+        }
+
+        .alipay {
+            border: 2px solid red;
+        }
+
+        .pay {
+            width: 120px;
+            height: 40px;
+            position: relative;
+            top: 20px;
+            left: 200px;
+            background-color: red;
+            color: white;
+            font-size: 18px;
+            border: 0;
+        }
+
+        .img_qrcode {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="pay_money">
+        <p>支付金额: <span style="color: red">{{ num }}</span><span>元</span></p>
+        {% if order_id_list_len == 0 %}
+        <span class="order_id" hidden>{{ order_id }}</span>
+            {% else %}
+            <span class="order_id" hidden>{{ order_id_list[0] }}</span>
+
+        {% endif %}
+
+    </div>
+    <div class="pay_mode">
+        <p>选择支付方式</p>
+        <button type="button" class="alipay">支付宝</button>
+        <button type="button" class="chatpay">微信</button>
+    </div>
+    <div>
+        <img class="img_qrcode" src="{{ img_src }}" alt=""/>
+    </div>
+    <div class="">
+        <button class="pay">立即支付</button>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        $('.alipay').click(function () {
+            $('.alipay').css({
+                'border': '2px solid red'
+            });
+            $('.chatpay').css({
+                'border': '1px solid black'
+            })
+        });
+        $('.chatpay').click(function () {
+            $('.alipay').css({
+                'border': '1px solid black'
+            });
+            $('.chatpay').css({
+                'border': '2px solid red'
+            })
+        });
+    })
+</script>
+<script>
+    let timer = setInterval("request_order_status()", 6000);
+    function request_order_status(){
+        let order_id = $('.order_id').html();
+        console.log(order_id)
+        $.get(
+            'http://' + window.location.host + '/order/judge_status',
+            {
+                'order_id': order_id
+            },
+            function (data) {
+                if (data == 200) {
+                    clearInterval(timer);
+                    let r = confirm('查看我的订单');
+
+                    if (r == true) {
+                        window.open('http://' + window.location.host + '/order/my_order', target='_parent')
+                    } else {
+                        window.open('http://' + window.location.host + '/', target='_parent')
+                    }
+                }
+            }
+        )
+    }
+
+</script>
+</html>

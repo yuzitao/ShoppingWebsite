@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <style>
+        #app {
+            width: 500px;
+            height: 400px;
+            margin: 80px auto;
+
+        }
+
+        table {
+            width: 500px;
+            height: 450px;
+            border: 1px solid darkgray;
+        }
+
+        .register_title {
+            text-align: center;
+        }
+
+        input {
+            width: 240px;
+            height: 35px;
+        }
+
+        tr {
+            height: 40px;
+        }
+
+        .user_title, .password_title, .re_password_title, .mobile_title, .real_name_title, .id_card_title {
+            text-align: center;
+            width: 80px;
+        }
+
+        .submit_btn, .cancel_btn {
+            width: 80px;
+            height: 30px;
+            margin-left: 80px;
+            border: 0;
+        }
+
+        .submit_btn {
+            background-color: blue;
+            color: white;
+        }
+
+        .cancel_btn {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <form action="{{ url_for('user.register') }}" method="post">
+        <table>
+            <tr>
+                <td colspan="3" class="register_title">用户注册</td>
+            </tr>
+            <tr>
+                <td class="user_title">
+                    <label>用户名:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" name="username" class="username" autocomplete="off"/>
+                </td>
+                <td>
+                    <span class="username_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="password_title">
+                    <label>密码:</label>
+                </td>
+                <td>
+                    <input type="password" placeholder="" name="password" class="password"/>
+                </td>
+                <td>
+                    <span class="password_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="re_password_title">
+                    <label>确认密码:</label>
+                </td>
+                <td>
+                    <input type="password" placeholder="" name="re_password" class="re_password"/>
+                </td>
+                <td>
+                    <span class="re_password_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="mobile_title">
+                    <label>手机号:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" name="mobile" class="mobile"/>
+                </td>
+                <td>
+                    <span class="mobile_warn" style="color: red;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="real_name_title">
+                    <label>真实姓名:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" name="real_name" class="real_name"/>
+                </td>
+                <td>
+                    <span class="real_name_warn" style="color: red;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="id_card_title">
+                    <label>身份证号:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" name="id_card" class="id_card"/>
+                </td>
+                <td>
+                    <span class="id_card_warn" style="color: red;"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <button class="submit_btn" type="submit">提交</button>
+                    <button class="cancel_btn" type="button">取消</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+<script>
+    $(function () {
+        $('.username').blur(function () {
+            let username = $('.username').val();
+            console.log(username);
+            if (username.length == 0) {
+                $('.username_warn').html('用户名不能为空');
+                $('.submit_btn').attr('disabled', true)
+            } else {
+                $('.username_warn').html('');
+                $('.submit_btn').attr('disabled', false)
+            }
+        });
+        $('.password').blur(function () {
+            let password = $('.password').val();
+            if (password.length == 0) {
+                $('.password_warn').html('密码不能为空');
+                $('.submit_btn').attr('disabled', true)
+            } else {
+                $('.password_warn').html('');
+                $('.submit_btn').attr('disabled', false)
+            }
+        });
+        $('.re_password').blur(function () {
+            let password = $('.password').val();
+
+            let re_password = $('.re_password').val();
+            if (re_password.length == 0) {
+                $('.re_password_warn').html('密码不能为空');
+                $('.submit_btn').attr('disabled', true)
+            } else {
+                if (password != re_password) {
+                    $('.re_password_warn').html('输入密码不一致');
+                    $('.submit_btn').attr('disabled', true)
+                } else {
+                    $('.re_password_warn').html('');
+                    $('.submit_btn').attr('disabled', false)
+                }
+
+            }
+        });
+        //手机号判断
+        $('.mobile').blur(function () {
+            let mobile = $('.mobile').val();
+            if (mobile.length == 0) {
+                $('.mobile_warn').html('手机号不能为空');
+                $('.submit_btn').attr('disabled', true)
+            } else {
+                $('.mobile_warn').html('');
+                $('.submit_btn').attr('disabled', false)
+            }
+        });
+        // 判断真实姓名
+        $('.real_name').blur(function () {
+            let real_name = $('.real_name').val();
+            if (real_name.length == 0) {
+                $('.real_name_warn').html('真实姓名不能为空');
+                $('.submit_btn').attr('disabled', true)
+            } else {
+                $('.real_name_warn').html('');
+                $('.submit_btn').attr('disabled', false)
+            }
+        });
+        //判断身份证号长度为18位
+        $('.id_card').blur(function () {
+            let id_card = $('.id_card').val();
+            if (id_card.length == 0) {
+                $('.id_card_warn').html('身份证号不能为空');
+                $('.submit_btn').attr('disabled', true)
+            } else {
+                if (id_card.length != 18) {
+                    $('.id_card_warn').html('输入的身份证号不合法');
+                    $('.submit_btn').attr('disabled', true)
+                } else {
+                    $('.id_card_warn').html('');
+                    $('.submit_btn').attr('disabled', false)
+                }
+
+            }
+        });
+        // 取消按钮清空输入框数据
+        $('.cancel_btn').click(function () {
+            $('.username').val('');
+            $('.password').val('');
+            $('.re_password').val('');
+            $('.mobile').val('');
+            $('.real_name').val('');
+            $('.id_card').val('');
+        })
+    })
+</script>
+</html>

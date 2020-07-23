@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block css %}
+    <style>
+    #content{
+        height: 100%;
+    }
+    #footer{
+        position: absolute;
+        bottom: 0;
+    }
+        #app {
+            width: 80%;
+            min-width: 1032px;
+            height: 100%;
+            margin: auto;
+        }
+
+        .taoci {
+            width: 162px;
+            height: 280px;
+            float: left;
+            margin: 0 10px 10px 0;
+        }
+
+        .taoci:hover {
+            border: 0.5px solid #dddddd;
+        }
+
+        img {
+            width: 160px;
+            height: 190px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div id="app">
+{#    遍历前端返回的goods#}
+        {% for good in goods %}
+            <div class="taoci">
+                <a href="/{{ good.id }}/">
+                    <img src="{{ good.index_image_url }}" alt="">
+                    <div>
+                        <span style="color: red; font-size: 20px">¥{{ good.price }}</span>
+                        <p style="color: darkgray">{{ good.title }}</p>
+                        <span>浏览次数:{{ good.click_counts }}</span>
+                    </div>
+                </a>
+
+            </div>
+        {% endfor %}
+
+
+    </div>
+{% endblock %}

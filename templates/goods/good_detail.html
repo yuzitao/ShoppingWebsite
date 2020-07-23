@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    详情页
+{% endblock %}
+
+{% block css %}
+    <style>
+        #app {
+            width: 80%;
+            min-width: 800px;
+            margin: auto;
+            display: flex;
+        }
+
+        .left {
+            width: 300px;
+            height: 300px;
+            margin-right: 20px;
+        }
+
+        img {
+            width: 300px;
+            height: 300px;
+        }
+
+        .prince_comment {
+            width: 500px;
+            height: 50px;
+        }
+
+        .price {
+            float: left;
+            margin: 5px 0 0 0;
+        }
+
+        .comment_num {
+            float: right;
+        }
+
+        .add_cart {
+            margin: 150px 0 0 30px;
+        }
+
+        .add_cart > input {
+            width: 60px;
+            height: 50px;
+            text-align: center;
+        }
+
+        .add_cart > .add, .reduce {
+            width: 25px;
+            height: 25px;
+        }
+
+        .add {
+            position: relative;
+            top: -12px;
+            left: -5px;
+        }
+
+        .reduce {
+            position: relative;
+            top: 12px;
+            left: -34px;
+        }
+
+        .add_cart_btn {
+            width: 120px;
+            height: 50px;
+            background-color: red;
+            color: white;
+            border: 0;
+            margin-left: 5px;
+        }
+
+        #comment {
+            width: 80%;
+            margin: 30px auto;
+        }
+
+        .comment_title {
+            width: 100px;
+            height: 40px;
+            background-color: red;
+            color: white;
+            line-height: 40px;
+            margin: 0;
+        }
+
+        .comment {
+            margin: 10px 0 0 0;
+            width: 80%;
+            border-bottom: 1px solid #dddddd;
+            display: inline-block !important;
+            padding-bottom: 10px;
+        }
+
+        .comment_left {
+            width: 120px;
+            float: left;
+        }
+
+        .comment_right {
+            margin-left: 130px;
+            width: 500px;
+        }
+
+        .user_icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            float: left;
+        }
+
+        .comment_text {
+            width: 800px;
+            height: 80px;
+            border: 1px solid #dddddd;
+        }
+
+        .comment_btn {
+            width: 80px;
+            height: 35px;
+            border: 0;
+            background-color: red;
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div id="app">
+        <div class="left">
+            <img src="{{ goods.index_image_url }}" alt="">
+        </div>
+        <div class="right">
+            <h5>{{ goods.title }}</h5>
+            <div class="prince_comment">
+                <div class="price">
+                    <span style="color: #dddddd">价格:</span><span style="color: red">¥{{ goods.price }}</span>
+                </div>
+                <div class="comment_num">
+                    <p style="color: #dddddd; margin: 0">浏览次数</p>
+                    <span>{{ goods.click_counts }}</span>
+                </div>
+            </div>
+            <div class="add_cart">
+                <input type="text" placeholder="" value="1" class="add_cart_num">
+                <button class="add">+</button>
+                <button class="reduce">-</button>
+                <span>剩余数量:{{ goods.counts }}</span>
+                <span style="display: none" class="goods_id">{{ goods.id }}</span>
+                <button class="add_cart_btn">加入购物车</button>
+            </div>
+        </div>
+    </div>
+    <div id="comment">
+        <p class="comment_title">商品评价({{ comment_num }})</p>
+        <hr style="margin: 0; color: red"/>
+        {% for comments in comments %}
+            <div class="comment">
+            <div class="comment_left">
+                <img class="user_icon" src="{{ comments.user.avatar_url }}" alt="">
+                <span style="line-height: 50px; margin-left: 5px">{{ comments.user.name }}</span>
+            </div>
+            <div class="comment_right">
+                <p>{{ comments.content }}</p>
+                <p style="color: #dddddd; margin-top: 30px">时间:{{ comments.cdate }}</p>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="comment_form">
+            {% if user %}
+                <form>
+                <textarea class="comment_text"></textarea><br/>
+                <button type="button" class="comment_btn">提交</button>
+            </form>
+                {% else %}
+                <p>您还没有登录，前去<a href="{{ url_for('user.login') }}">登录</a> </p>
+            {% endif %}
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            // 加入购物车
+            $('.add').click(function () {
+                let add_cart_num = $('.add_cart_num').val();
+                let num = eval(add_cart_num);
+                num += 1;
+                $('.reduce').attr('disabled', false);
+                $('.add_cart_num').val(num)
+            });
+            // 修改加入购物车的数量
+            $('.reduce').click(function () {
+                let add_cart_num = $('.add_cart_num').val();
+                if (add_cart_num == 1) {
+                    $('.reduce').attr('disabled', true);
+                } else {
+                    $('.reduce').attr('disabled', false);
+                    let num = eval(add_cart_num);
+                    num -= 1;
+                    $('.add_cart_num').val(num)
+                }
+            });
+            // 修改加入购物车的数量
+            $('.add_cart_btn').click(function () {
+                let goods_id = $('.goods_id').html();
+                let goods_num = $('.add_cart_num').val();
+                $.post(
+                    'http://' + window.location.host + '/add_cart',
+                    {
+                        'goods_id': goods_id,
+                        'goods_num': goods_num
+                    },
+                    function (data) {
+                        alert(data.msg)
+                    }
+                )
+            });
+            $('.comment_btn').click(function () {
+                let content = $('.comment_text').val();
+                let gid = $('.goods_id').html();
+                // 调取商品评论接口
+                $.post(
+                    'http://' + window.location.host + '/goods/comment',
+                    {
+                        'content': content,
+                        'gid': gid
+                    },
+                    // 成功向页面添加一条数据
+                    function (data) {
+                        let str = '<div class="comment"><div class="comment_left"><img class="user_icon" src';
+                        str += '="';
+                        str += data.img_url + '">';
+                        str += '<span style="line-height: 50px; margin-left: 5px">';
+                        str += data.username + '</span></div><div class="comment_right"><p>';
+                        str += data.content + '</p><p style="color: #dddddd; margin-top: 30px">时间:';
+                        str += data.comment_time + '</p></div></div>';
+//在评论底部添加
+                        $('.comment_form').before(str)
+                    }
+                )
+            })
+
+        })
+    </script>
+    <script>
+        // 增加浏览次数
+        $(function () {
+            let goods_id = $('.goods_id').html();
+            $.get(
+                'http://' + window.location.host + '/goods/click_counts',
+                {
+                    'gid': goods_id
+                },
+                function (data) {
+                    console.log(data)
+                }
+            )
+        })
+    </script>
+{% endblock %}

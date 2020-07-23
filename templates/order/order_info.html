@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>订单结算页</title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        #app {
+            width: 70%;
+            margin: 20px auto;
+        }
+
+        .consignee_info, .pay {
+            width: 80%;
+            min-width: 700px;
+            height: 100px;
+            border: 1px solid #dddddd;
+            margin-bottom: 5px;
+        }
+
+        .user_info {
+            margin-left: 40px;
+            width: 93%;
+            height: 30px;
+            line-height: 30px;
+            padding-left: 10px;
+        }
+
+        .user_info:hover {
+            background-color: #e4b9c0;
+        }
+
+        .online_pay {
+            width: 70px;
+            height: 28px;
+            margin-left: 20px;
+            border: 2px solid red;
+        }
+
+        .detailed_list {
+            width: 80%;
+            min-height: 160px;
+            min-width: 700px;
+            border: 1px solid #dddddd;
+        }
+
+        .detail {
+            margin: 10px 0 10px 20px;
+            height: 110px;
+        }
+
+        .goods_img_name {
+            float: left;
+            width: 300px;
+        }
+
+        .goods_img {
+            width: 100px;
+            height: 100px;
+            float: left;
+            margin-right: 5px;
+        }
+
+        .goods_price {
+            float: left;
+            width: 100px;
+            height: 30px;
+            margin-top: 30px;
+            margin-left: 50px;
+        }
+
+        .goods_num {
+            float: left;
+            width: 50px;
+            height: 30px;
+            margin-top: 30px;
+            margin-left: 130px;
+        }
+
+        .submit_order {
+            width: 80%;
+            min-width: 700px;
+            height: 60px;
+            text-align: right;
+            border: 1px solid #d2d2d2;
+            background-color: #d2d2d2;
+        }
+
+        .price {
+            color: red;
+            margin-right: 20px;
+        }
+
+        #submit_order {
+            width: 120px;
+            height: 40px;
+            background-color: red;
+            color: white;
+            border: 0;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <h3 style="margin-bottom: 20px">结算页</h3>
+    <p style="margin-bottom: 20px">填写并核对订单信息</p>
+    <div class="consignee_info">
+        <p>收货人信息</p>
+        <p class="user_info">
+            <span>{{ user.name }}</span>&nbsp;&nbsp;
+            <span>{{ user.addr }}</span>&nbsp;&nbsp;
+            <span>{{ user.mobile }}</span>
+        </p>
+
+    </div>
+    <div class="pay">
+        <p>支付方式</p>
+        <button type="button" class="online_pay">在线支付</button>
+    </div>
+    <div class="detailed_list">
+        <p>送货清单</p>
+        {% for cart in carts %}
+            <div class="detail">
+                <div class="goods_img_name">
+                    <img class="goods_img" src="{{ cart.goods.index_image_url }}" alt=""/>
+                    <span>{{ cart.goods.title }}</span>
+                </div>
+                <div class="goods_price">
+                    <b>¥</b><span class="unit_price">{{ cart.goods.price }}</span>
+                </div>
+                <div class="goods_num">
+                    <b>x</b><span class="num">{{ cart.counts }}</span>
+                </div>
+            </div>
+            <hr style="clear: both; position: relative; top: 5px;"/>
+        {% endfor %}
+    </div>
+    <div class="submit_order">
+        <p style="height: 30px">
+            <span style="margin-right: 50px">应付总金额:</span><b>¥</b><span class="price"></span>
+        </p>
+        <p>
+            <span>寄送至:</span><span>{{ user.addr }}</span>
+            <span>收货人:</span>{{ user.name }}&nbsp;&nbsp;&nbsp;<span style="margin-right: 20px">{{ user.mobile }}</span>
+        </p>
+    </div>
+    <div style="width: 80%; min-width: 700px; text-align: right">
+        <button id="submit_order">提交订单</button>
+    </div>
+
+
+</div>
+
+</body>
+<script>
+    $(function () {
+        let total_price = 0;
+        $('.detail').each(function () {
+            let unit_price = $(this).find('.unit_price').html();
+            let num = $(this).find('.num').html();
+
+            total_price += Number(unit_price) * Number(num);
+        });
+        $('.price').html(total_price);
+        $('#submit_order').click(function () {
+            let url = 'http://' + window.location.host + '/order/submit_order';
+            window.open(url, target='_parent')
+        })
+    })
+</script>
+</html>

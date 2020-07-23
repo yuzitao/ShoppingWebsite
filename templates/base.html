@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+
+        {% endblock %}
+    </title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            {#height: 100%;#}
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: none;
+            color: black;
+        }
+        #content{
+            width: 100%;
+            clear: both;
+        }
+        #footer {
+            background-color: #d2d2d2;
+            width: 100%;
+            height: 270px;
+            text-align: center;
+            clear: both;
+            margin-top: 50px;
+        }
+        .footer_title{
+            margin-top: 10px;
+        }
+        .s_f{
+            margin-left: 120px;
+        }
+    </style>
+    {% block css %}
+
+    {% endblock %}
+</head>
+<body>
+<div id="header">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('goods.index') }}">首页</a></li>
+{#                    <li><a href="#">分类</a></li>#}
+                </ul>
+                <form class="s_f navbar-form navbar-left" action="{{ url_for('goods.search_goods') }}" method="get">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="" name="kw">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('cart.add_cart') }}">购物车</a></li>
+                    <li><a href="{{ url_for('user.user_info') }}">个人中心</a></li>
+                    {% if user %}
+                        <li><a href="#">{{ user.name }}</a></li>
+                        <li><a href="{{ url_for('user.lg') }}">退出</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('user.login') }}">登录</a></li>
+                        <li><a href="{{ url_for('user.register') }}">注册</a></li>
+                    {% endif %}
+
+
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>
+
+<div id="content">
+    {% block content %}
+
+    {% endblock %}
+</div>
+<div id="footer">
+    <address class="footer_title">
+        <strong>义升陶瓷, Inc.</strong><br>
+        <span class="glyphicon glyphicon-map-marker" style="color: rgb(140, 140, 60);"> 地址：</span>国贸广场国贸街24号<br>
+        江西，景德镇 <br>
+        <abbr title="Phone"><span class="glyphicon glyphicon-phone-alt" style="color: rgb(140, 140, 60);"> 联系电话：</span></abbr>
+        13979850474
+    </address>
+    <address>
+        <a href="mailto:#"><span class="glyphicon glyphicon-envelope" style="color: rgb(140, 140, 60);"> 邮件：</span>1163902851@qq.com</a>
+    </address>
+    <div id="footer_div2" pull-right>
+        <figure><img src="../static/image/wechat.jpg" style="width: 100px; height: 100px;">
+            <figcaption>微信联系我们</figcaption>
+        </figure>
+    </div>
+</div>
+</body>
+{% block js %}
+
+{% endblock %}
+</html>

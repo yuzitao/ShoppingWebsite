@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .header {
+            width: 100%;
+            min-width: 800px;
+            height: 20px;
+            background-color: whitesmoke;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: black;
+            text-decoration: none;
+        }
+
+        .return_index {
+            margin-left: 20%;
+            color: black;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .user_lg {
+            margin-left: 60%;
+            color: black;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        #content {
+            width: 80%;
+            min-width: 1000px;
+            height: 700px;
+            margin: 10px auto;
+            background-color: whitesmoke;
+            display: flex;
+        }
+
+        .content_left {
+            width: 10%;
+            min-width: 120px;
+        }
+
+        .content_right {
+            width: 90%;
+            min-width: 800px;
+        }
+
+        .user_info_ul {
+            width: 10%;
+            min-width: 120px;
+            height: 100%;
+            margin: 0 0 0 10px;
+            padding-top: 10px;
+        }
+
+        .user_info_li {
+            list-style: none;
+            width: 100px;
+            height: 25px;
+        }
+
+        #footer {
+            background-color: #dddddd;
+            width: 100%;
+            height: 260px;
+            text-align: center;
+            position: relative;
+            top: -10px;
+            clear: both;
+        }
+
+        .footer_title {
+            margin-top: 10px;
+        }
+
+        .add_user_addr:hover {
+            color: blue;
+        }
+
+        #add_addr, #update_addr {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            width: 300px;
+            height: 200px;
+            background-color: white;
+            display: none;
+            border: 1px solid #dddddd;
+        }
+
+        #add_addr > form, #update_addr > form {
+            margin: 20px 0 0 20px;
+        }
+        .submit_btn{
+            width: 35px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <p class="header">
+        <span class="return_index"><a href="{{ url_for('goods.index') }}">返回首页</a></span>
+        <span class="user_lg"><a href="{{ url_for('user.lg') }}">退出</a> </span>
+    </p>
+    <div id="content">
+        <div class="content_left">
+            <ul class="user_info_ul">
+                <li class="user_info_li"><a href="{{ url_for('user.user_info') }}">个人信息</a></li>
+                <li class="user_info_li"><a href="{{ url_for('order.order_list') }}">我的订单</a></li>
+                <li class="user_info_li"><a href="{{ url_for('user.user_addr') }}">收货地址</a></li>
+
+            </ul>
+        </div>
+        <div class="content_right">
+            <p style="background-color: white; width: 100%; height: 30px; line-height: 30px; margin: 10px 0 0 0">
+                我的收货地址</p>
+            <div class="user_addr" style="width: 260px; height: 300px; background-color: white; margin: 10px 0 0 20px">
+                {% if user.addr %}
+                    <span>地址1:</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>{{ user.addr }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="javascript:;" class="update_addr">修改</a>
+                {% else %}
+                    <span>您还没有添加收货地址，点击<a href="javascript:;" class="add_user_addr">添加</a> </span>
+                {% endif %}
+
+            </div>
+
+        </div>
+        <div id="add_addr">
+            <form action="{{ url_for('user.add_addr') }}" method="post">
+                <input type="text" placeholder="请输入您的地址" name="addr">
+                <button type="submit" class="submit_btn">添加</button>
+            </form>
+        </div>
+        <div id="update_addr">
+            <form action="{{ url_for('user.add_addr') }}" method="post">
+                <input type="text" placeholder="请输入您的地址" name="addr" value="{{ user.addr }}">
+                <button type="submit" class="submit_btn">修改</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <address class="footer_title">
+        <strong>义升陶瓷, Inc.</strong><br>
+        <span class="glyphicon glyphicon-map-marker" style="color: rgb(140, 140, 60);"> 地址：</span>国贸广场国贸街24号<br>
+        江西，景德镇 <br>
+        <abbr title="Phone"><span class="glyphicon glyphicon-phone-alt" style="color: rgb(140, 140, 60);"> 联系电话：</span></abbr>
+        13979850474
+    </address>
+    <address>
+        <a href="mailto:#"><span class="glyphicon glyphicon-envelope" style="color: rgb(140, 140, 60);"> 邮件：</span>1163902851@qq.com</a>
+    </address>
+    <div id="footer_div2" pull-right>
+        <figure><img src="/static/image/wechat.jpg" style="width: 100px; height: 100px;">
+            <figcaption>微信联系我们</figcaption>
+        </figure>
+    </div>
+
+</div>
+</body>
+<script>
+    $(function () {
+        $('.add_user_addr').click(function () {
+            $('#add_addr').css({
+                'display': 'block'
+            })
+        });
+        $('.update_addr').click(function () {
+            $('#update_addr').css({
+                'display': 'block'
+            })
+        })
+    })
+</script>
+</html>

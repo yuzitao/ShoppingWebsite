@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>订单列表</title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+        {#height: 100%;#} background-color: #d2d2d2;
+        }
+
+        .header {
+            width: 100%;
+            min-width: 800px;
+            height: 20px;
+            background-color: whitesmoke;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: black;
+            text-decoration: none;
+        }
+
+        .return_index {
+            margin-left: 20%;
+            color: black;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .user_lg {
+            margin-left: 60%;
+            color: black;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        #content {
+            width: 80%;
+            min-width: 1000px;
+            height: 100%;
+            margin: 10px auto;
+        {#border: 1px solid red;#} background-color: whitesmoke;
+            display: flex;
+        }
+
+        .content_left {
+
+        }
+
+        .user_info_ul {
+            width: 10%;
+            min-width: 120px;
+            height: 100%;
+            margin: 0 0 0 10px;
+            padding-top: 10px;
+        }
+
+        .user_info_li {
+            list-style: none;
+            width: 100px;
+            height: 25px;
+        }
+
+        .content_right {
+            width: 100%;
+            height: 800px;
+        {#border: 1px solid red;#}
+        }
+
+        .my_order_list {
+            width: 100%;
+            height: 40px;
+            background-color: white;
+            margin: 10px 0 10px 0;
+            line-height: 40px;
+            font-size: 18px;
+        }
+
+        .my_order_list > span {
+            margin-left: 20px;
+        }
+
+        .s {
+            width: 100%;
+            height: 20px;
+            background-color: white;
+            font-size: 14px;
+        }
+
+        .all_order, .wait_pay, .wait_recevi {
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        .all_order {
+            margin-left: 10px;
+            border-bottom: 2px solid red;
+        }
+        .paginate{
+            text-align: right;
+            margin-right: 20px;
+        }
+        .all_order:hover, .wait_pay:hover, .wait_recevi:hover {
+            color: red;
+        }
+
+        .all_order_content, .wait_pay_content, .wait_recevi_content {
+            margin: 10px 0 0 0;
+        }
+
+        .order_detail {
+            width: 98%;
+            height: 120px;
+            margin: 10px 0 10px 5px;
+            background-color: white;
+        }
+
+        .order_name_img {
+            width: 300px;
+            height: 100px;
+            float: left;
+            margin: 10px 0 10px 10px;
+        }
+
+        .order_img {
+            width: 100px;
+            height: 100px;
+            float: left;
+        }
+
+        .order_num {
+            width: 150px;
+            height: 100px;
+            line-height: 100px;
+            float: left;
+        }
+
+        .order_peoper {
+            width: 150px;
+            height: 100px;
+            line-height: 100px;
+            float: left;
+        }
+
+        .order_total_price {
+            width: 150px;
+            height: 100px;
+            line-height: 100px;
+            float: left;
+        }
+
+        .order_status {
+            width: 60px;
+            height: 100px;
+            line-height: 80px;
+            float: left;
+        }
+
+        .pay, .sure {
+            width: 60px;
+            height: 30px;
+            border: 0;
+            background-color: red;
+            color: white;
+            position: relative;
+            top: -50px;
+            left: -6px;
+            cursor: pointer;
+        }
+
+        #footer {
+            background-color: #dddddd;
+            width: 100%;
+            height: 260px;
+            text-align: center;
+            position: relative;
+            top: 80px;
+            clear: both;
+        }
+
+        .footer_title {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <p class="header">
+        <span class="return_index"><a href="{{ url_for('goods.index') }}">返回首页</a></span>
+        <span class="user_lg"><a href="{{ url_for('user.lg') }}">退出</a> </span>
+    </p>
+    <div id="content">
+        <div class="content_left">
+            <ul class="user_info_ul">
+                <li class="user_info_li"><a href="{{ url_for('user.user_info') }}">个人信息</a></li>
+                <li class="user_info_li"><a href="{{ url_for('order.order_list') }}">我的订单</a></li>
+                <li class="user_info_li"><a href="{{ url_for('user.user_addr') }}">收货地址</a></li>
+
+            </ul>
+        </div>
+        <div class="content_right">
+            <p class="my_order_list">
+                <span>我的订单</span>
+            </p>
+            <div id="header_classify">
+                <p class="s">
+                    <span class="all_order"><a href="{{ url_for('order.order_list') }}">全部订单</a> </span>
+                    <span class="wait_pay"><a href="{{ url_for('order.wait_pay') }}">待支付</a> </span>
+                    <span class="wait_recevi"><a href="{{ url_for('order.wait_recevi') }}">待收货</a> </span>
+                </p>
+            </div>
+            <div class="all_order_content">
+{#            我的订单实现分页#}
+                {% for order in orders %}
+                    <span>订单时间：</span><span>{{ order.ordertime }}</span>
+                    <div class="order_detail">
+
+                        <div class="order_name_img">
+                            <img class="order_img" src="{{ order.goods.index_image_url }}" alt=""/>
+                            <span class="order_title">{{ order.goods.title }}</span>
+                        </div>
+                        <div class="order_num">
+                            <span>x</span><span>{{ order.count }}</span>
+                        </div>
+                        <div class="order_peoper">
+                            <span>{{ order.user.name }}</span>
+                        </div>
+                        <div class="order_total_price">
+                            <span>¥</span><span>{{ order.total_money }}</span>
+                        </div>
+                        <div class="order_status">
+                            {% if order.state == 0 %}
+                                <span>待支付</span>
+                                <span class="order_id" hidden>{{ order.id }}</span>
+                                <button class="pay">去支付</button>
+                            {% elif order.state == 1 %}
+                                <span>待收货</span>
+                                <a href="{{ url_for('order.sure_order') }}?order_id={{ order.id }}" hidden><span class="a_sure">确认收货</span></a>
+                                <button class="sure">确认收货</button>
+                            {% else %}
+                                <span>已完成</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+{# 分页内容以及跳转#}
+            <div class="paginate">
+            当前页数：{{ paginate.page }}
+                总页数：{{ paginate.pages }}
+                一共有{{ paginate.total }}条数据
+            <span class="url_path" hidden>{{ url_path }}</span>
+                {% if url_path == 'all' %}
+                    {% if paginate.has_prev %}
+                        <a href="{{ url_for('order.order_list') }}?page={{ paginate.prev_num }}">上一页</a>
+                    {% endif %}
+                    页码：
+                    {% for i in paginate.iter_pages() %}
+                        <a href="{{ url_for('order.order_list') }}?page={{ i }}">{{ i }}</a>
+                    {% endfor %}
+
+                    {% if paginate.has_next %}
+                        <a href="{{ url_for('order.order_list') }}?page={{ paginate.next_num }}">下一页</a>
+                    {% endif %}
+                {% elif url_path == 'pay' %}
+                    {% if paginate.has_prev %}
+                        <a href="{{ url_for('order.wait_pay') }}?page={{ paginate.prev_num }}">上一页</a>
+                    {% endif %}
+                    页码：
+                    {% for i in paginate.iter_pages() %}
+                        <a href="{{ url_for('order.wait_pay') }}?page={{ i }}">{{ i }}</a>
+                    {% endfor %}
+
+                    {% if paginate.has_next %}
+                        <a href="{{ url_for('order.wait_pay') }}?page={{ paginate.next_num }}">下一页</a>
+                    {% endif %}
+                {% else %}
+                    {% if paginate.has_prev %}
+                        <a href="{{ url_for('order.wait_recevi') }}?page={{ paginate.prev_num }}">上一页</a>
+                    {% endif %}
+                    页码：
+                    {% for i in paginate.iter_pages() %}
+                        <a href="{{ url_for('order.wait_recevi') }}?page={{ i }}">{{ i }}</a>
+                    {% endfor %}
+
+                    {% if paginate.has_next %}
+                        <a href="{{ url_for('order.wait_recevi') }}?page={{ paginate.next_num }}">下一页</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <address class="footer_title">
+        <strong>义升陶瓷, Inc.</strong><br>
+        <span class="glyphicon glyphicon-map-marker" style="color: rgb(140, 140, 60);"> 地址：</span>国贸广场国贸街24号<br>
+        江西，景德镇 <br>
+        <abbr title="Phone"><span class="glyphicon glyphicon-phone-alt" style="color: rgb(140, 140, 60);"> 联系电话：</span></abbr>
+        13979850474
+    </address>
+    <address>
+        <a href="mailto:#"><span class="glyphicon glyphicon-envelope" style="color: rgb(140, 140, 60);"> 邮件：</span>1163902851@qq.com</a>
+    </address>
+    <div id="footer_div2" pull-right>
+        <figure><img src="/static/image/wechat.jpg" style="width: 100px; height: 100px;">
+            <figcaption>微信联系我们</figcaption>
+        </figure>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        let url_path = $('.url_path').html();
+        if (url_path == 'all') {
+            $('.all_order').css({
+                'border-bottom': '2px solid red',
+            })
+        } else if (url_path == 'pay') {
+            $('.wait_pay').css({
+                'border-bottom': '2px solid red',
+            });
+            $('.all_order').css({
+                'border-bottom': '0',
+                'color': 'black'
+            });
+            $('.wait_recevi').css({
+                'border-bottom': '0',
+                'color': 'black'
+            })
+        } else {
+            $('.wait_recevi').css({
+                'border-bottom': '2px solid red',
+            });
+            $('.wait_pay').css({
+                'border-bottom': '0',
+                'color': 'black'
+            });
+            $('.all_order').css({
+                'border-bottom': '0',
+                'color': 'black'
+            });
+        }
+        $('.sure').click(function () {
+            $(this).parent().find('.a_sure').click()
+        });
+        $('.pay').click(function () {
+            let order_id = $(this).parent().find('.order_id').html();
+            console.log(order_id);
+
+            let url = 'http://' + window.location.host + '/order/submit_order?order_id=' + order_id;
+            window.open(url, target = '_parent')
+        })
+    })
+</script>
+</html>

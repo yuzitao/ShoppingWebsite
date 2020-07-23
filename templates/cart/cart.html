@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的购物车</title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+        }
+
+        #app {
+            width: 80%;
+            min-width: 1200px;
+            margin: auto;
+        }
+
+        .cart_title {
+            width: 100%;
+            min-width: 1200px;
+            height: 50px;
+            margin: 20px auto;
+            background-color: #dddddd;
+        }
+
+        .col01, .col02, .col03, .col04, .col05, .col06 {
+            font-size: 18px;
+            list-style: none;
+            float: left;
+            line-height: 50px;
+        }
+
+        .col01 {
+            width: 80px;
+            margin-left: 10px;
+        }
+
+        .col02 {
+            width: 450px;
+        }
+
+        .col03, .col04, .col05, .col06 {
+            width: 150px;
+        }
+
+        .goods {
+            margin-bottom: 5px;
+            width: 100%;
+            min-width: 1200px;
+            height: 100px;
+            border: 1px solid black;
+            padding-top: 10px;
+            padding-bottom: 10px
+        }
+
+        .check_goods {
+            float: left;
+            width: 30px;
+            margin-left: 10px;
+        }
+
+        .goods_img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .goods_name {
+            width: 350px;
+            height: 50px;
+            float: left;
+            margin-left: 10px;
+        }
+
+        .goods_price {
+            margin-left: 50px;
+            float: left;
+            margin-top: 30px;
+            width: 130px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #777777;
+        }
+
+        .goods_num {
+            float: left;
+            margin-top: 30px;
+            width: 160px;
+        }
+
+        .num {
+            width: 30px;
+            height: 20px;
+            text-align: center
+        }
+
+        .add_num_btn, .reduce_num_btn {
+            width: 20px;
+            height: 20px;
+        }
+
+        .goods_total_price {
+            float: left;
+            margin-top: 30px;
+            width: 150px;
+        }
+
+        .settlement {
+            width: 100%;
+            min-width: 1200px;
+            height: 50px;
+            border: 0.5px solid #dddddd;
+            margin-top: 10px;
+        }
+
+        #go_to_settement {
+            float: right;
+        }
+
+        .g_total_price {
+            color: red;
+            margin-right: 20px;
+        }
+
+        .settement_btn {
+            width: 80px;
+            height: 50px;
+            background-color: red;
+            border: 0;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #footer {
+            background-color: #d2d2d2;
+            width: 100%;
+            height: 260px;
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+            clear: both;
+        }
+
+        .footer_title {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="cart_title">
+        <ul>
+            <li class="col01">
+                <input type="checkbox" class="check_all"/>
+                <spam>全选</spam>
+            </li>
+            <li class="col02">商品名称</li>
+            <li class="col03">商品单价</li>
+            <li class="col04">数量</li>
+            <li class="col05">小计</li>
+            <li class="col06">操作</li>
+        </ul>
+    </div>
+    {% for cart in carts %}
+        <div class="goods">
+            <div class="check_goods">
+                <input type="checkbox" class="check_one"/>
+                <input type="text" value="{{ cart.id }}" style="display: none" class="cart_id">
+            </div>
+            <div class="goods_name_img">
+                <div style="float: left">
+                    <img class="goods_img" src="{{ cart.goods.index_image_url }}" alt=""/>
+                </div>
+                <div class="goods_name">
+                    <span>{{ cart.goods.title }}</span>
+                </div>
+            </div>
+            <div class="goods_price">
+                <span>¥{{ cart.goods.price }}</span>
+            </div>
+            <div class="goods_num">
+                <button class="reduce_num_btn">-</button>
+                <input type="text" class="num" placeholder="" value="{{ cart.counts }}"/>
+                <input type="text" value="{{ cart.goods.price }}" class="unit_price" style="display: none">
+                <button class="add_num_btn">+</button>
+                <input type="text" hidden value="{{ cart.id }}" class="cart_id">
+                <input type="text" hidden value="{{ cart.gid }}" class="goods_id">
+            </div>
+            <div class="goods_total_price">
+                <span>¥</span><span class="total_price">55</span>
+            </div>
+            <div class="goods_handle" style="margin-top: 30px;">
+                <a href="/delete/{{ cart.id }}">删除</a>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="settlement">
+        <div id="go_to_settement">
+            <span style="color: #777777; font-size: 12px; margin-right: 10px;">总价：</span><span
+                class="g_total_price">0.00</span>
+            <button class="settement_btn">去结算</button>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <address class="footer_title">
+        <strong>义升陶瓷, Inc.</strong><br>
+        <span class="glyphicon glyphicon-map-marker" style="color: rgb(140, 140, 60);"> 地址：</span>国贸广场国贸街24号<br>
+        江西，景德镇 <br>
+        <abbr title="Phone"><span class="glyphicon glyphicon-phone-alt" style="color: rgb(140, 140, 60);"> 联系电话：</span></abbr>
+        13979850474
+    </address>
+    <address>
+        <a href="mailto:#"><span class="glyphicon glyphicon-envelope" style="color: rgb(140, 140, 60);"> 邮件：</span>1163902851@qq.com</a>
+    </address>
+    <div id="footer_div2" pull-right>
+        <figure><img src="/static/image/wechat.jpg" style="width: 100px; height: 100px;">
+            <figcaption>微信联系我们</figcaption>
+        </figure>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        // 购物车添加商品数量
+        $('.add_num_btn').click(function () {
+            let that = this;
+            let num = eval($(this).parent().children('.num').val());
+            let unit_price = $(this).parent().children('.unit_price').val();
+            let cart_id = $(this).parent().children('.cart_id').val();
+            let goods_id = $(this).parent().children('.goods_id').val();
+            $.get(
+                'http://' + window.location.host + '/cart/add_goods',
+                {
+                    'cart_id': cart_id,
+                    'goods_id': goods_id
+                },
+                function (data) {
+                    if (data.status == 201) {
+                        alert(data.msg)
+                    } else {
+                        num += 1;
+                        let total_price = num * eval(unit_price);
+                        $(that).parent().children('.num').val(num);
+                        $(that).parent().parent().children().children('.total_price').html(total_price);
+                        totalprice();
+                    }
+                }
+            );
+
+
+        });
+        // 购物车减少商品数量
+        $('.reduce_num_btn').click(function () {
+            let that = this;
+            let num = eval($(this).parent().children('.num').val());
+            let unit_price = $(this).parent().children('.unit_price').val();
+            let cart_id = $(this).parent().children('.cart_id').val();
+            let goods_id = $(this).parent().children('.goods_id').val();
+            if (num == 1) {
+                alert('不能再少啦')
+            } else {
+                $.get(
+                    'http://' + window.location.host + '/cart/reduce_goods',
+                    {
+                        'cart_id': cart_id,
+                        'goods_id': goods_id
+                    },
+                    function (data) {
+                        num -= 1;
+                        let total_price = num * eval(unit_price);
+                        $(that).parent().children('.num').val(num);
+                        $(that).parent().parent().children().children('.total_price').html(total_price);
+                        totalprice();
+                    }
+                );
+
+            }
+
+        });
+        // 勾选计算商品价格
+        $('.check_one').click(function () {
+            totalprice()
+        });
+        // 全选
+        $('.check_all').click(function () {
+            if ($('.check_all').prop("checked") == true) {
+                $('.check_one').prop("checked", true)
+            } else {
+                $('.check_one').prop("checked", false)
+            }
+            totalprice()
+        });
+// 计算总价格
+        function totalprice() {
+            let num = 0;
+            $('.check_one').each(function () {
+                if (this.checked == true) {
+                    let total_price = $(this).parent().parent().find('.total_price').html();
+                    num += Number(total_price);
+                }
+            });
+            $('.g_total_price').html(num)
+        }
+// 提交订单
+        $('.settement_btn').click(function () {
+            let data = [];
+            $('.check_one').each(function () {
+                if (this.checked == true) {
+                    let cart_id = $(this).parent().parent().find('.cart_id').val();
+                    data.push(cart_id)
+                }
+            });
+            if (data.length == 0) {
+                alert('请至少勾选一件商品')
+            } else {
+                let url = 'http://' + window.location.host + '/order/getOrderInfo';
+                $.post(
+                    url,
+                    {
+                        'aaa': data.toString()
+                    },
+                    function (data) {
+                        if (data == 200) {
+                            let url = 'http://' + window.location.host + '/order/orderInfo';
+                            window.open(url, target = '_self')
+                        }
+                    }
+                )
+            }
+
+
+        })
+    })
+</script>
+<script>
+    $(function () {
+        $('.goods').each(function () {
+            let total_price = 0;
+            let num = $(this).find('.num').val();
+            let unit_price = $(this).find('.unit_price').val();
+            total_price += Number(num) * Number(unit_price);
+
+            $(this).find('.total_price').html(total_price)
+        });
+
+    })
+</script>
+</html>

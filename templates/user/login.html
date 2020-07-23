@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <script src="/static/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+    <style>
+        #app {
+            width: 500px;
+            height: 500px;
+            margin: 60px auto;
+        }
+
+        table {
+            width: 500px;
+            height: 500px;
+            border: 1px solid darkgray;
+        }
+
+        tr {
+            height: 30px;
+        }
+
+        .login_title {
+            text-align: center;
+        }
+
+        .username, .password {
+            width: 180px;
+            height: 20px;
+        }
+
+        .img_code, .phone {
+            width: 90px;
+            height: 20px;
+        }
+
+        .user_title, .password_title, .img_code_title, .phone_code {
+            width: 100px;
+            text-align: center;
+        }
+
+        .login_btn, .cancel_btn {
+            width: 80px;
+            height: 30px;
+            border: 0;
+            margin-left: 80px;
+        }
+
+        .login_btn {
+            background-color: blue;
+            color: white;
+        }
+
+        .cancel_btn {
+            background-color: #dddddd;
+        }
+
+        .verify_code_img {
+            width: 60px;
+            height: 30px;
+            position: relative;
+            top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <form action="{{ url_for('user.login') }}?next_url={{ next_url }}" method="post">
+        <table>
+            <tr>
+                <td colspan="3" class="login_title">用户登录</td>
+            </tr>
+            <tr>
+                <td class="user_title">
+                    <label>用户名:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" class="username" name="username" autocomplete="off"/>
+                </td>
+                <td>
+                    <span class="username_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="password_title">
+                    <label>密码:</label>
+                </td>
+                <td>
+                    <input type="password" placeholder="" name="password" class="password"/>
+                </td>
+                <td>
+                    <span class="password_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="img_code_title">
+                    <label>验证码:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" name="img_code" class="img_code"/>
+                    <img class="verify_code_img" src=''/>
+                    <span style="display: none;" class="verify_code_num"></span>
+                </td>
+                <td>
+                    <span class="img_code_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="phone_code">
+                    <label>手机号:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" name="phone" class="phone"/>
+                    <button type="button" class="get_phone_code_btn">获取短信验证码</button>
+                </td>
+                <td>
+                    <span class="phone_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="phone_code">
+                    <label>验证码:</label>
+                </td>
+                <td>
+                    <input type="text" placeholder="" name="code" class="code"/>
+                    <span style="display: none" class="phone_code_span"></span>
+                </td>
+                <td>
+                    <span class="phone_code_warn" style="color: red"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="color: red">{{ msg }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <button type="submit" class="login_btn">登录</button>
+                    <button type="button" class="cancel_btn">取消</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+<script>
+    $(function () {
+        $('.username').blur(function () {
+            let username = $('.username').val();
+            console.log(username);
+            if (username.length == 0) {
+                $('.username_warn').html('用户名不能为空');
+                $('.login_btn').attr('disabled', true)
+            } else {
+                $('.username_warn').html('');
+                $('.login_btn').attr('disabled', false)
+            }
+        });
+        $('.password').blur(function () {
+            let password = $('.password').val();
+            if (password.length == 0) {
+                $('.password_warn').html('密码不能为空');
+                $('.login_btn').attr('disabled', true)
+            } else {
+                $('.password_warn').html('');
+                $('.login_btn').attr('disabled', false)
+            }
+        });
+        $('.img_code').blur(function () {
+            let img_code_num = $('.img_code').val();
+            let num = $('.verify_code_num').html();
+            if (img_code_num.length == 0) {
+                $('.img_code_warn').html('验证码不能为空');
+                $('.login_btn').attr('disabled', true);
+            } else {
+                if (img_code_num != num) {
+                    $('.img_code_warn').html('验证码错误');
+                    $('.login_btn').attr('disabled', true);
+                } else {
+                    $('.img_code_warn').html('');
+                    $('.login_btn').attr('disabled', false);
+                }
+            }
+        });
+        $('.phone').blur(function () {
+            let phone = $('.phone').val();
+            if (phone.length == 0) {
+                $('.phone_warn').html('手机号不能为空');
+                $('.login_btn').attr('disabled', true)
+            } else {
+                $('.phone_warn').html('');
+                $('.login_btn').attr('disabled', false)
+            }
+        });
+        $('.code').blur(function () {
+            let code = $('.code').val();
+            let phone_code_span = $('.phone_code_span').html();
+            if (phone_code_span.length != 0) {
+                if (code == phone_code_span) {
+                    $('.phone_code_warn').html('');
+                    $('.login_btn').attr('disabled', false)
+                } else {
+                    $('.phone_code_warn').html('验证码输入错误');
+                    $('.login_btn').attr('disabled', true)
+                }
+            } else {
+                $('.phone_warn').html('请获取验证码');
+                $('.login_btn').attr('disabled', true)
+            }
+        });
+        // 实现点击图片验证码更新
+        $('.verify_code_img').click(function () {
+            $.get(
+                'http://' + window.location.host + '/user/get_img_code',
+                function (data) {
+                    console.log(data);
+                    $.each(data, function (i, n) {
+                        if (i == 'num') {
+                            $('.verify_code_num').html(n)
+                        } else {
+                            if (i == 'img_path') {
+                                $('.verify_code_img').attr('src', n)
+                            }
+
+                        }
+                    })
+                }
+            )
+        });
+        // 获取手机验证码
+        $('.get_phone_code_btn').click(function () {
+            let phone = $('.phone').val();
+            let username = $('.username').val();
+            if (phone.length != 0) {
+                $.get(
+                    'http://'+ window.location.host + '/user/get_phone_code',
+                    {
+                        'phone': phone,
+                        'username': username
+                    },
+                    function (data) {
+                        if (data.status == 200) {
+                            $('.phone_code_warn').html('');
+                            $('.phone_code_span').html(data.code);
+                        } else {
+                            $('.phone_code_warn').html(data.msg);
+                            $('.phone_code_warn').css({
+                                'font-size': '12px'
+                            })
+                        }
+                    }
+                )
+            } else {
+                $('.phone_warn').html('手机号不能为空');
+                $('.login_btn').attr('disables', true);
+            }
+        })
+    })
+</script>
+<script>
+    // 每次页面刷新请求返回图片验证码接口
+    $(function () {
+        // 获取图片验证码
+        function get_img() {
+            $.get(
+                'http://' + window.location.host + '/user/get_img_code',
+                function (data) {
+                    $('.verify_code_num').html(data.num);
+                    $('.verify_code_img').attr('src', data.img_path + "?t=" + Math.random());
+                }
+            )
+        }
+
+        get_img()
+    })
+
+</script>
+</html>
